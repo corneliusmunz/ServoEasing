@@ -96,7 +96,7 @@ volatile bool sInterruptsAreActive = false; // true if interrupts are still acti
  * Cannot use "static servo_t servos[MAX_SERVOS];" from Servo library since it is static :-(
  */
 uint_fast8_t sServoArrayMaxIndex = 0; // maximum index of an attached servo in sServoArray[]
-ServoEasing * sServoArray[MAX_EASING_SERVOS];
+ServoEasing *sServoArray[MAX_EASING_SERVOS];
 // used to move all servos
 int sServoNextPositionArray[MAX_EASING_SERVOS];
 
@@ -547,7 +547,7 @@ void ServoEasing::writeMicrosecondsOrUnits(int aValue) {
 #  else
     /*
      * Distribute the servo start time over the 20 ms period.
-     * Unexpectedly this even saves 20 bytes Flash for an ATMega328P
+     * Unexpectedly this even saves 20 bytes Flash for an ATmega328P
      */
     setPWM(mServoPin * ((4096 - (DEFAULT_PCA9685_UNITS_FOR_180_DEGREE + 100)) / 15), aValue); // mServoPin * 233
 #  endif
@@ -907,7 +907,7 @@ float ServoEasing::callEasingFunction(float aPercentageOfCompletion) {
         return CubicEaseIn(aPercentageOfCompletion);
     case EASE_QUARTIC_IN:
         return QuarticEaseIn(aPercentageOfCompletion);
-#  ifndef KEEP_SERVO_EASING_LIBRARY_SMALL
+#  ifndef DISABLE_COMPLEX_FUNCTIONS
     case EASE_SINE_IN:
         return SineEaseIn(aPercentageOfCompletion);
     case EASE_CIRCULAR_IN:
@@ -967,7 +967,7 @@ int ServoEasing::getMillisForCompleteMove() {
     return mMillisForCompleteMove;
 }
 
-void ServoEasing::print(Print * aSerial, bool doExtendedOutput) {
+void ServoEasing::print(Print *aSerial, bool doExtendedOutput) {
     printDynamic(aSerial, doExtendedOutput);
     printStatic(aSerial);
 }
@@ -975,7 +975,7 @@ void ServoEasing::print(Print * aSerial, bool doExtendedOutput) {
 /*
  * Prints values which may change from move to move.
  */
-void ServoEasing::printDynamic(Print * aSerial, bool doExtendedOutput) {
+void ServoEasing::printDynamic(Print *aSerial, bool doExtendedOutput) {
 // pin is static but it is required for identifying the servo
     aSerial->print(mServoIndex);
     aSerial->print('/');
@@ -1027,7 +1027,7 @@ void ServoEasing::printDynamic(Print * aSerial, bool doExtendedOutput) {
  * Prints values which normally does NOT change from move to move.
  * call with
  */
-void ServoEasing::printStatic(Print * aSerial) {
+void ServoEasing::printStatic(Print *aSerial) {
 
     aSerial->print(F("0="));
     aSerial->print(mServo0DegreeMicrosecondsOrUnits);
@@ -1102,7 +1102,7 @@ bool areInterruptsActive() {
  * Defined weak in order to be able to overwrite it.
  */
 #if defined(STM32F1xx) && STM32_CORE_VERSION_MAJOR == 1 &&  STM32_CORE_VERSION_MINOR <= 8 // for "Generic STM32F1 series" from STM32 Boards from STM32 cores of Arduino Board manager
-__attribute__((weak)) void handleServoTimerInterrupt(HardwareTimer * aDummy __attribute__((unused))) // changed in stm32duino 1.9 - 5/2020
+__attribute__((weak)) void handleServoTimerInterrupt(HardwareTimer *aDummy __attribute__((unused))) // changed in stm32duino 1.9 - 5/2020
 #else
 __attribute__((weak)) void handleServoTimerInterrupt()
 #endif
@@ -1412,7 +1412,7 @@ void synchronizeAndEaseToArrayPositions(uint_fast16_t aDegreesPerSecond) {
     synchronizeAllServosStartAndWaitForAllServosToStop();
 }
 
-void printArrayPositions(Print * aSerial) {
+void printArrayPositions(Print *aSerial) {
 //    uint_fast8_t tServoIndex = 0;
     aSerial->print(F("ServoNextPositionArray="));
 // AJ 22.05.2019 This does not work with GCC 7.3.0 atmel6.3.1 and -Os
@@ -1459,7 +1459,7 @@ void setSpeedForAllServos(uint_fast16_t aDegreesPerSecond) {
 /*
  * Sets the sServoNextPositionArray[] of the first aNumberOfServos to the specified values
  */
-void setDegreeForAllServos(uint_fast8_t aNumberOfServos, va_list * aDegreeValues) {
+void setDegreeForAllServos(uint_fast8_t aNumberOfServos, va_list *aDegreeValues) {
     for (uint_fast8_t tServoIndex = 0; tServoIndex < aNumberOfServos; ++tServoIndex) {
         sServoNextPositionArray[tServoIndex] = va_arg(*aDegreeValues, int);
     }
